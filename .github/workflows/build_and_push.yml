@@ -1,0 +1,79 @@
+name: Build and push container images for cross-compiling
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+  workflow_dispatch:
+    inputs:
+      image_label:
+        description: Label for container images
+        required: false
+        type: string
+        default: "latest"
+
+  workflow_call:
+    inputs:
+      image_label:
+        description: Label for container images
+        required: false
+        type: string
+        default: "latest"
+
+jobs:
+  build_and_push_image:
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY: ghcr.io
+    strategy:
+      fail-fast: false
+      matrix:
+        cross_platform: [aarch64, arm32, msdos, mswindows]
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Call make to get settings for ${{ matrix.cross_platform }} container
+        id: make
+        run: |
+          echo cont_file="$(make cross_platforms='${{ matrix.cross_platform }}' \
+            show_cross_platform_files)" >> $GITHUB_OUTPUT
+          echo img_tag="$(make cross_platforms='${{ matrix.cross_platform }}' \
+            show_cross_platform_tags)" >> $GITHUB_OUTPUT
+          echo img_label="$(make cross_platforms='${{ matrix.cross_platform }}' \
+            image_label='${{ inputs.image_label }}' \
+            show_image_label)" >> $GITHUB_OUTPUT
+
+      - name: Log into the Container registry
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fetch metadata for ${{ matrix.cross_platform }} container
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ${{ env.REGISTRY }}/${{ github.repository }}/${{ steps.make.outputs.img_tag }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value={{date 'YYYYMMDD'}}
+            type=match,pattern=v(.*),group=1
+
+      - name: Build and push ${{ matrix.cross_platform }} container image
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          file: ${{ steps.make.outputs.cont_file }} 
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
