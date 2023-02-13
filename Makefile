@@ -6,11 +6,20 @@
 cross_platforms ?= aarch64 arm32 msdos mswindows
 image_label     ?= latest
 
-
 define nl
 
 
 endef
+
+container_cmd_defaults = podman docker
+container_cmd_default_paths := $(shell command -v $(container_cmd_defaults))
+
+ifndef container_cmd
+  container_cmd = $(firstword $(container_cmd_default_paths))
+  ifeq ($(container_cmd),)
+    $(error Must install docker or podman)
+  endif
+endif
 
 define cross_vars
   $(eval $(1)_dir     = container-build-$(1))
@@ -28,7 +37,7 @@ all: $(target_files)
 
 $(eval $(foreach v,$(cross_platforms),\
 $($v_file): FORCE;\
-	docker build . \
+	$(container_cmd) build . \
 		--file '$$@' \
 		--tag '$$($v_tag):$$(image_label)'$(nl)) \
 )
