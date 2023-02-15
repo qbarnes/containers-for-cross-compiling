@@ -1,4 +1,4 @@
-# x86_64 container for cross-compiling ARM arm32 binaries.
+# x86_64 container for cross-compiling ARM armv7l binaries.
 #
 # Binaries have been tested on Raspberry Pi OS based on Debian 11.
 #

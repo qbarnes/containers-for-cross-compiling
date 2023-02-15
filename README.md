@@ -1,6 +1,6 @@
 This repo provides containers with cross-compilation environments
-for building binaries for ARM aarch64, ARM 32-bit, MS-DOS, and
-Microsoft Windows 32-bit and 64-bit.
+for building binaries for ARM 64-bit (aarch64), ARM 32-bit (armv7l),
+MS-DOS, and Microsoft Windows 32-bit and 64-bit.
 
 I reference these containers in other repos for use with GitHub Actions.
 
