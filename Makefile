@@ -3,7 +3,7 @@
 # binutils, and basic libraries) of the supported platforms.
 #
 
-cross_platforms ?= aarch64 armv7l msdos mswindows
+cross_platforms ?= aarch64 armv7l msdos mswindows mswindows_regex
 image_label     ?= latest
 
 define nl
