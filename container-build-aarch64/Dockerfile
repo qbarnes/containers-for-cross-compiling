@@ -9,6 +9,12 @@ FROM docker.io/library/ubuntu:20.04
 
 RUN apt-get update && \
 	DEBIAN_FRONTEND="noninteractive" DEBCONF_NOWARNINGS="yes" \
-	apt-get install -y git build-essential gcc-aarch64-linux-gnu && \
+	apt-get install -y \
+		git \
+		build-essential \
+		groff-base \
+		groff \
+		bsdmainutils \
+		gcc-aarch64-linux-gnu && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

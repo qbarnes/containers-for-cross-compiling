@@ -4,7 +4,14 @@ FROM docker.io/library/ubuntu:22.04
 
 RUN apt-get update && \
 	DEBIAN_FRONTEND="noninteractive" DEBCONF_NOWARNINGS="yes" \
-	apt-get install -y git curl build-essential mingw-w64 && \
+	apt-get install -y \
+		git \
+		curl \
+		build-essential \
+		groff-base \
+		groff \
+		bsdmainutils \
+		mingw-w64 && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
 	curl -fSsLO https://github.com/andrewwutw/build-djgpp/releases/download/v3.1/djgpp-linux64-gcc1020.tar.bz2 && \

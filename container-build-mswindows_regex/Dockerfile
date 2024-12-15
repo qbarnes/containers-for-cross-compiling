@@ -8,7 +8,13 @@
 FROM quay.io/fedora/fedora:40
 
 RUN dnf -y update && \
-	dnf -y install git @c-development \
+	dnf -y install \
+		git \
+		@c-development \
+		perl-IO-Compress \
+		groff-base \
+		groff-perl \
+		util-linux \
 		mingw{32,64}-gcc{,-c++} mingw{32,64}-binutils \
 		mingw{32,64}-libgnurx{,-static} && \
 	dnf clean all && \
